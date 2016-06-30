@@ -10,6 +10,7 @@ class Date
 
   class << self
     attr_accessor :beginning_of_week_default
+    attr_accessor :beginning_of_quarter_default
 
     # Returns the week start (e.g. :monday) for the current request, if this has been set (via Date.beginning_of_week=).
     # If <tt>Date.beginning_of_week</tt> has not been set for the current request, returns the week start specified in <tt>config.beginning_of_week</tt>.
@@ -30,6 +31,21 @@ class Date
     def find_beginning_of_week!(week_start)
       raise ArgumentError, "Invalid beginning of week: #{week_start}" unless ::Date::DAYS_INTO_WEEK.key?(week_start)
       week_start
+    end
+
+    def beginning_of_quarter
+      Thread.current[:beginning_of_quarter] || beginning_of_quarter_default || [10, 7, 4, 1]
+    end
+
+    def beginning_of_quarter=(quarter_start)
+      Thread.current[:beginning_of_quarter] = find_beginning_of_quarter!(quarter_start)
+    end
+
+    def find_beginning_of_quarter!(quarter_start)
+      unless quarter_start.size == 4 && quarter_start == quarter_start.sort.reverse && quarter_start.each_cons(2).all? {|p, n| p - n == 3 }
+        raise ArgumentError, "Invalid beginning of quarter: #{quarter_start}"
+      end
+      quarter_start
     end
 
     # Returns a new Date representing the date 1 day ago (i.e. yesterday's date).

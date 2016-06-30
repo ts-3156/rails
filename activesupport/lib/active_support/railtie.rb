@@ -41,6 +41,13 @@ module ActiveSupport
       Date.beginning_of_week_default = beginning_of_week_default
     end
 
+    initializer "active_support.initialize_beginning_of_quarter" do |app|
+      require 'active_support/core_ext/date/calculations'
+      beginning_of_quarter_default = Date.find_beginning_of_quarter!(app.config.beginning_of_quarter)
+
+      Date.beginning_of_quarter_default = beginning_of_quarter_default
+    end
+
     initializer "active_support.set_configs" do |app|
       app.config.active_support.each do |k, v|
         k = "#{k}="
